@@ -3,6 +3,18 @@
 
 {%- for name, service in system.service.items() %}
 
+{%- if service.status is list %}
+{%- for servicestatus in service.status.items() %}
+linux_service_{{ name }}_{{ servicestatus }}:
+  service.{{ servicestatus }}:
+  {%- if servicestatus == 'dead' %}
+  - enable: {{ service.get('enabled', False) }}
+  {%- elif servicestatus == 'running' %}
+  - enable: {{ service.get('enabled', True) }}
+  {%- endif %}
+  - name: {{ name }}
+{%- endfor %}
+{%- else %}
 linux_service_{{ name }}:
   service.{{ service.status }}:
   {%- if service.status == 'dead' %}
@@ -12,5 +24,6 @@ linux_service_{{ name }}:
   {%- endif %}
   - name: {{ name }}
 
+{%- endif %}
 {%- endfor %}
 {%- endif %}

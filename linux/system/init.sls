@@ -130,3 +130,15 @@ include:
 {%- if system.mcelog is defined %}
 - linux.system.mcelog
 {%- endif %}
+{%- if system.xen is defined %}
+- linux.system.xen
+{%- endif %}
+{%- if system.libvirt is defined %}
+- linux.system.libvirt
+{%- endif %}
+{%- if system.rsyncd is defined %}
+- linux.system.rsyncd
+{%- endif %}
+{%- if system.lsyncd is defined %}
+- linux.system.lsyncd
+{%- endif %}

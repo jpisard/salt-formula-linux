@@ -19,6 +19,8 @@ linux:
       ethtool: ''
       xfsprogs: ''
       sysfsutils: ''
+      rsync: ''
+      lsyncd: ''
       ntp: 
         version: latest
       mariadb-server: 
@@ -79,6 +81,51 @@ linux:
       webmin:
         source: "deb http://download.webmin.com/download/repository sarge contrib"
         key_url: "http://www.webmin.com/jcameron-key.asc"
+    rsyncd:
+      enabled: true
+      max_connections: 30
+      read_only: True
+      module:
+        sharedapp:
+          path: /home/data/sharedapp
+          read_only: False
+#          incoming_chmod: Du=rwx,Dgo=rwx,Fug=rw,Fo=r
+          uid: root
+        echangeStudio:
+          path: /home/data/echange/Studio
+          uid: root
+          gid: 10513
+          read_only: False
+
+    lsyncd:
+      enabled: true
+      module:
+        /home/data/echange/Studio/:
+          targetlist:
+            - 192.168.100.4::echangeStudio/
+          exclude:
+            - '.*'
+          delay: 15
+          compress: true
+          update: true
+          perms: true
+          delete: "'running'"
+          _extra:
+            - '--bwlimit=400'
+
+        /home/data/sharedapp/:
+          targetlist:
+            - 192.168.100.4::sharedapp/
+          exclude:
+            - 'lost+found'
+          delay: 15
+          compress: true
+          update: true
+          perms: true
+          delete: "'running'"
+          _extra:
+            - '--bwlimit=800'
+    
 
   network:
     enabled: true

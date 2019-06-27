@@ -303,9 +303,15 @@ linux_interface_{{ interface_name }}:
     {%- endfor %}
   - ports: {% for network in interface.get('use_interfaces', []) %}{{ network }} {% endfor %}{% for network in interface.get('use_ovs_ports', []) %}{{ network }} {% endfor %}
   - require:
+    {%- if interface.require_interfaces is defined %}
+    {%- for netif in interface.get('require_interfaces', []) %}
+    - network: linux_interface_{{ netif }}
+    {%- endfor %}
+    {%- else %}
     {%- for network in interface.get('use_interfaces', []) %}
     - network: linux_interface_{{ network }}
     {%- endfor %}
+    {%- endif %}
     {%- for network in interface.get('use_ovs_ports', []) %}
     - cmd: ovs_port_up_{{ network }}
     {%- endfor %}
@@ -351,7 +357,7 @@ remove_interface_{{ network }}_line2:
 
 {%- if interface.gateway is defined %}
 
-linux_system_network:
+linux_system_network_{{ interface_name }}:
   network.system:
   - enabled: {{ interface.enabled }}
   - hostname: {{ network.fqdn }}

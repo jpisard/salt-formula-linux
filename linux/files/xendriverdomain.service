@@ -1,0 +1,17 @@
+{%- from "linux/map.jinja" import system with context -%}
+[Unit]
+Description=Xen driver domain device daemon
+Requires=proc-xen.mount
+{% if system.xen.get('oldservice', False) -%}
+After=proc-xen.mount xen
+{% else -%}
+After=proc-xen.mount xenstored.service xenconsoled.service xen-init-dom0.service
+{%- endif %}
+ConditionVirtualization=xen
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/xl devd
+
+[Install]
+WantedBy=multi-user.target

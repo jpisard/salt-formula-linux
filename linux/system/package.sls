@@ -9,7 +9,7 @@
   } %}
 {%- for name, package in system.package.items() %}
 
-  {%- if package.repo is defined or package.hold is defined or package.verify is defined %}
+  {%- if package.repo is defined or package.hold is defined or package.verify is defined or package.install_recommends is defined %}
 linux_extra_package_{{ name }}:
     {%- if package.version is defined %}
       {%- if package.version == 'latest' %}
@@ -26,6 +26,9 @@ linux_extra_package_{{ name }}:
   pkg.installed:
     {%- endif %}
   - name: {{ name }}
+    {%- if package.install_recommends is defined %}
+  - install_recommends: {{ package.install_recommends }}
+    {%- endif %}
     {%- if package.repo is defined %}
   - fromrepo: {{ package.repo }}
     {%- endif %}

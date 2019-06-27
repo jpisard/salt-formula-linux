@@ -117,6 +117,23 @@
     },
 }, grain='os_family', merge=salt['pillar.get']('linux:system:banner'), base='BaseDefaults') %}
 
+{% set rsyncd = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['rsync'],
+        'service': 'rsync',
+        'user': 'root',
+        'group': 'root',
+        'config': '/etc/default/rsync',
+    },
+    'RedHat': {
+        'pkgs': ['rsync', 'xinetd'],
+        'service': 'xinetd',
+        'user': 'root',
+        'group': 'root',
+        'config': '/etc/xinetd.d/rsync',
+    },
+}, grain='os_family', merge=salt['pillar.get']('linux:system:rsyncd')) %}
+
 {% set auth = salt['grains.filter_by']({
     'Arch': {
         'enabled': false,
@@ -466,4 +483,15 @@ Debian:
         }
     },
 }, grain='os_family', merge=salt['pillar.get']('linux:monitoring')) %}
+
+{% set saltconfig = salt['grains.filter_by']({
+    'Linux': {
+        'folder':'/etc/salt',
+        'saltcall':'salt-call',
+    },
+    'Windows': {
+        'folder':'c:\\salt\\conf',
+        'saltcall':'C:\salt\salt-call.bat',
+    },
+}, grain='kernel', merge=salt['pillar.get']('saltconfig')) %}
 
